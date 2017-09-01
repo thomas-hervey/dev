@@ -16,6 +16,7 @@ function reverseGeocoder (req, res) {
   }
 }
 
+
 function shapeIndexHandler(req, res) {
   const query = req.query || {}
 
@@ -74,19 +75,20 @@ function formatHit(hit, hits) {
 
 function createFeature(extent) {
   const inputExtent = JSON.parse(extent)
-  console.log(inputExtent)
-  const createdBBox = helpers.polygon(extent);
+  // console.log(inputExtent)
+  // const createdBBox = helpers.polygon(extent);
 
-  // const reducedExtent = inputExtent.reduce(function(a, b) { return a.concat(b) })
-  const feature = bboxPolygon(createdBBox)
+  const reducedExtent = inputExtent.reduce(function(a, b) { return a.concat(b) })
+  const feature = bboxPolygon(reducedExtent)
   feature.properties.extent = inputExtent
   return feature
 }
 
+// query documents from elasticsearch
 function getDocuments(req, extentFeature) {
   // setup elastic search client connection
   const client = require('../../es_setup/connection')
-
+  // get query payload
   const payload = getPayload(extentFeature, req.params.index)
 
   return client.search({
@@ -98,7 +100,7 @@ function getDocuments(req, extentFeature) {
 }
 
 function getPayload(extentFeature, index_name) {
-  // create es search payload
+
   let payload
 
   if(index_name === 'shape_index') {
@@ -107,25 +109,25 @@ function getPayload(extentFeature, index_name) {
     payload.query.bool.filter.geo_shape.geometry.shape.coordinates = extentFeature.properties.extent
     return payload
   }
-  // TODO: fix query & run agains `shape_index`, onces finished indexing
-  else if (index_name === 'shape_index') {
+  // TODO: fix query & run against `shape_index`, onces finished indexing
+  else if (index_name === 'shape_index' && 1 === 2) {
     payload = require('./payloads/new_payload')
 
     const area = turfArea(extentFeature)
     const center = turfCentroid(extentFeature).geometry.coordinates
 
     payload.query.function_score.query.bool.filter.geo_shape.geometry.shape.coordinates = extentFeature.properties.extent
-    // payload.query.bool.must[1].range.area.gte = area / 10
-    // payload.size = 1 // TODO: change this so that we don't only get one result
-    // payload.query.function_score.query.bool.must[0].geo_shape.geometry.shape.coordinates = extentFeature.properties.extent
-    // payload.query.function_score.query.bool.must[1].range.area.gte = area / 3
-    // payload.query.function_score.functions[0].gauss.nested.path.origin.lon = center[0]
-    // payload.query.function_score.functions[0].gauss.location.origin.lat = center[1]
-    // payload.query.function_score.functions[0].gauss.center.offset = ((Math.sqrt(area) / 1000) * 0.1).toString() + 'km'
-    // payload.query.function_score.functions[0].gauss.center.scale = ((Math.sqrt(area) / 1000) * 0.5).toString() + 'km'
-    // payload.query.function_score.functions[1].gauss.area.origin = area.toString()
-    // payload.query.function_score.functions[1].gauss.area.offset = (area * 0.25).toString()
-    // payload.query.function_score.functions[1].gauss.area.scale = (area * 0.5).toString()
+    payload.query.bool.must[1].range.area.gte = area / 10
+    payload.size = 1 // TODO: change this so that we don't only get one result
+    payload.query.function_score.query.bool.must[0].geo_shape.geometry.shape.coordinates = extentFeature.properties.extent
+    payload.query.function_score.query.bool.must[1].range.area.gte = area / 3
+    payload.query.function_score.functions[0].gauss.nested.path.origin.lon = center[0]
+    payload.query.function_score.functions[0].gauss.location.origin.lat = center[1]
+    payload.query.function_score.functions[0].gauss.center.offset = ((Math.sqrt(area) / 1000) * 0.1).toString() + 'km'
+    payload.query.function_score.functions[0].gauss.center.scale = ((Math.sqrt(area) / 1000) * 0.5).toString() + 'km'
+    payload.query.function_score.functions[1].gauss.area.origin = area.toString()
+    payload.query.function_score.functions[1].gauss.area.offset = (area * 0.25).toString()
+    payload.query.function_score.functions[1].gauss.area.scale = (area * 0.5).toString()
     return payload
   }
   else { return 'no value selected' }
