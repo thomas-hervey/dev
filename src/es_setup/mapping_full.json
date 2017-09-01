@@ -1,0 +1,32 @@
+{
+  "mappings": {
+    "polygons_type": {
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "nested",
+          "properties": {
+            "name": { "type": "string" },
+            "nameVariants": { "type": "string" },
+            "placeType": { "type": "string" },
+            "hierarchy": { "type": "integer" },
+            "belongsTo": { "type": "integer" },
+            "parentID": { "type": "integer" },
+            "children": { "type": "integer" }
+          }
+        },
+        "bbox": { "type": "integer" },
+        "geometry": {
+          "type": "geo_shape",
+          "tree": "geohash",
+          "precision": "500m"
+        }
+      }
+    }
+  }
+}

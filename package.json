@@ -1,0 +1,29 @@
+{
+  "name": "dev",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@turf/bbox": "^4.6.0",
+    "@turf/bbox-polygon": "^4.6.0",
+    "@turf/helpers": "^4.6.0",
+    "@turf/turf": "^4.6.1",
+    "elasticsearch": "^13.3.1",
+    "express": "^4.15.4",
+    "recursive-readdir": "^2.2.1",
+    "request": "^2.81.0",
+    "simplify-geojson": "^1.0.3",
+    "simplify-geometry": "0.0.2",
+    "sleep": "^5.1.1",
+    "turf": "^3.0.14",
+    "turf-area": "^3.0.12",
+    "turf-centroid": "^3.0.12",
+    "turf-extent": "^1.0.4"
+  }
+}
